@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const getHash = require('../helpers/getHash')
+const bcrypt = require('bcryptjs')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
@@ -27,25 +27,29 @@ const userSchema = new Schema({
             reject(err)
           })
         })
-      }, message : 'Gunakan Email lain'
+      }, message : 'Email already taken'
     }
   },
   password : {
-    type: String,
-    minlength : [5, 'password minimal 8 karakter'],
-    maxlength : [20, 'password minimal 20 karakter']
+    type: String
   },
-  profilePicture: String
+  profilePicture: String,
+  friends : [{ type: Schema.Types.ObjectId, ref: 'User' }]
 })
 
-userSchema.post('validate', function(result) {
-  return getHash(result.password)
-  .then(data => {
-    result.password = data
-  })
-  .catch(err => {
-    throw new Error(err)
-  })
+userSchema.pre('save', function(next) {
+  let user = this;
+
+  // only hash the password if it has been modified (or is new)
+  if (!user.isModified('password')) return next();
+  
+  // hash the password
+  bcrypt.hash(user.password, 1, function (err, hash) {
+      // if (err) return next(err)
+      // override the cleartext password with the hashed one
+      user.password = hash;
+      next();
+  });
 })
 
 const User = mongoose.model('User', userSchema)

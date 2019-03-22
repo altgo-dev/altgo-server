@@ -4,7 +4,7 @@ const UserRoutes = require('../routes/user')
 const MeetupsRoutes = require('./meetups')
 const images = require('../helpers/images.js')
 
-routes.post('/register', images.multer.single('image') , images.sendUploadToGCS , userController.register)
+routes.post('/register', images.multer.single('image'), images.sendUploadToGCS , userController.register)
 routes.post('/login', userController.login)
 
 routes.use('/meetups', MeetupsRoutes)
