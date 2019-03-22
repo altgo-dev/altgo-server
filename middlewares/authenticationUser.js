@@ -6,7 +6,6 @@ function authentication(req, res, next) {
     req.userAuthentic = decode
     next()
   } catch(err) {
-    console.log(err)
     res.status(401).json({message :'Unauthorized'})
   }
 }

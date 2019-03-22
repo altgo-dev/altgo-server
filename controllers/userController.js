@@ -15,6 +15,16 @@ class ControllerUser {
     }
   }
 
+  static findAllUser (req, res) {
+    User.find({}).populate('friends')
+      .then(users => {
+        res.status(200).json({users})
+      })
+      .catch(err => {
+        res.status(500).json({err: err.message})
+      }) 
+  }
+
   static async addFriend(req, res) {
     try {
       const searchFriend =
@@ -27,13 +37,36 @@ class ControllerUser {
             UserId1 : req.body.friendId
           }]
         })
-      if(!searchFriend) {
+      const  friendExist = await User.findById(req.body.friendId)
+      if(!searchFriend && friendExist) {
         let newFriend = 
           await Friend.create({
             UserId1: req.userAuthentic._id,
             UserId2: req.body.friendId
           })
-          res.status(201).json(newFriend)
+
+        let updateFriend2 = 
+          await User.findOneAndUpdate({
+            _id: req.body.friendId
+          }, {
+            $push: {
+              friends : req.userAuthentic._id
+            }
+          }, {
+            new:  true
+          }).populate('friends')
+
+        let updateFriend1 = 
+          await User.findOneAndUpdate({
+            _id: req.userAuthentic._id
+          }, {
+            $push: {
+              friends : req.body.friendId
+            }
+          }, {
+            new:  true
+          }).populate('friends')
+        res.status(201).json(updateFriend1)
       } else {
         throw 400
       }
@@ -46,22 +79,43 @@ class ControllerUser {
     }
   }
 
-  static removeFriend(req, res) {
-    Friend.deleteOne({
-      $or: [{
-        UserId1: req.userAuthentic._id,
-        UserId2 : req.body.friendId
-      },{
-        UserId2: req.userAuthentic._id,
-        UserId1 : req.body.friendId
-      }]
-    })
-      .then(friend => {
-        res.status(200).json(friend)
-      })
-      .catch(err => {
-        res.status(500).json({err : err.message})
-      })
+  static async removeFriend(req, res) {
+    try {
+      const remove =     
+        await Friend.deleteOne({
+          $or: [{
+            UserId1: req.userAuthentic._id,
+            UserId2 : req.body.friendId
+          },{
+            UserId2: req.userAuthentic._id,
+            UserId1 : req.body.friendId
+          }]
+        })
+        let updateFriend2 = 
+          await User.findOneAndUpdate({
+            _id: req.body.friendId
+          }, {
+            $pull: {
+              friends : req.userAuthentic._id
+            }
+          }, {
+            new:  true
+          }).populate('friends')
+
+        let updateFriend1 = 
+        await User.findOneAndUpdate({
+          _id: req.userAuthentic._id
+        }, {
+          $pull: {
+            friends : req.body.friendId
+          }
+        }, {
+          new:  true
+        }).populate('friends')
+      res.status(200).json(updateFriend1)
+    } catch (error) {
+      res.status(500).json({error : error.message})
+    }
   }
 
   static register(req, res) {
@@ -69,21 +123,26 @@ class ControllerUser {
     if (req.file) {
       image = req.file.cloudStoragePublicUrl
     }
-
+    if(req.body.password.length < 5 || req.body.password.length > 20 ) {
+      throw 400
+    }
     User.create({
       name : req.body.name,
       email : req.body.email,
       password : req.body.password,
-      image : image
+      profilePicture : image
     })
     .then(user => {
       res.status(201).json({user})
     })
     .catch(err => {
-      res.status(500).json({err : err.message})
+      if(err == 400) {
+        res.status(400).json({err : 'Password Invalid'})
+      } else {
+        res.status(500).json({err : err.message})
+      }
     })
   }
-
 
   static update(req, res) {
     if(req.body.image) {
@@ -96,6 +155,10 @@ class ControllerUser {
     })
     .then(user => {
       for(let key in req.body) {
+        if(key === 'password' && (req.body.password.length < 5 || req.body.password.length > 20) ) {
+
+          throw '400'
+        }
         user.set(key, req.body[key])
       }
       return user.save()
@@ -104,7 +167,12 @@ class ControllerUser {
       res.status(200).json({user})
     })
     .catch(err => {
-      res.status(500).json({err : err.message})
+      if(err == 400) {
+        res.status(400).json({err : 'Password Invalid'})
+      } else {
+        res.status(500).json({err : err.message})
+
+      }
     })
   }
 

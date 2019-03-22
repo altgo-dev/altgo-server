@@ -40,17 +40,16 @@ const sendUploadToGCS = (req, res, next) => {
       next()
     })
   })
-
   stream.end(req.file.buffer)
 }
 
 const Multer = require('multer'),
-      multer = Multer({
-        storage: Multer.MemoryStorage,
-        limits: {
-          fieldSize: 2 * 1024 * 1024
-        }
-      })
+  multer = Multer({
+    storage: Multer.MemoryStorage,
+    limits: {
+      fieldSize: 2 * 1024 * 1024
+    }
+  })
 
 module.exports = {
   getPublicUrl,
