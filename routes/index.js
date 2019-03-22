@@ -7,5 +7,6 @@ routes.post('/register', images.multer.single('image') , images.sendUploadToGCS 
 routes.post('/login', userController.login)
 
 routes.use('/users', UserRoutes)
+routes.use('/routeOptimizer', require('./routeOptimizer'))
 
 module.exports = routes
