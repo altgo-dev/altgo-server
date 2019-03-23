@@ -194,6 +194,7 @@ class ControllerUser {
         }
       })
       .then(verified => {
+        
         if (verified) {
           const token = jwt.sign({
             _id: userFound._id
