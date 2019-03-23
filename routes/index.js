@@ -9,7 +9,7 @@ routes.post('/login', userController.login)
 
 routes.use('/meetups', MeetupsRoutes)
 routes.use('/users', UserRoutes)
-routes.use('/routeOptimizer', require('./routeOptimizer'))
+routes.use('/route', require('./routeOptimizer'))
 
 module.exports = routes
 
