@@ -119,7 +119,7 @@ class ControllerUser {
   }
 
   static register(req, res) {
-    let image = req.body.image
+    let image = req.body.image ? req.body.image: ''
     if (req.file) {
       image = req.file.cloudStoragePublicUrl
     }
