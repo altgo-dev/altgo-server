@@ -16,7 +16,18 @@ class ControllerUser {
   }
 
   static findAllUser(req, res) {
-    User.find({}).populate('friends')
+    let query = {}
+
+    if (req.query.email) {
+      query = {
+        email: {
+          $regex: '.*' + req.query.email + '.*',
+          $options: "i"
+        }
+      }
+    }
+
+    User.find(query).populate('friends')
       .then(users => {
         res.status(200).json({ users })
       })
@@ -194,6 +205,7 @@ class ControllerUser {
         }
       })
       .then(verified => {
+        
         if (verified) {
           const token = jwt.sign({
             _id: userFound._id
