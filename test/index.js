@@ -414,6 +414,19 @@ describe('Places', () => {
         done()
       })
   })
+
+  it('should return autocomplete', function (done) {
+    chai
+      .request(app)
+      .post('/autocomplete')
+      .send({
+        input: 'jakarta'
+      })
+      .end(function (err, res) {
+        expect(res).to.have.status(200)
+        done()
+      })
+  })
 })
 
 describe('Meetup', () => {
