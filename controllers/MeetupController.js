@@ -50,7 +50,7 @@ class MeetupController {
             },
             name: result.name,
             rating: result.rating,
-            open_now: result.opening_hours.open_now,
+            //open_now: result.opening_hours.open_now,
             types: result.types,
             // photo_path: result.photos[0].photo_reference, 
             location: result.vicinity
@@ -86,7 +86,6 @@ class MeetupController {
     Meetup
       .findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
       .then(updatedMeetup => {
-        console.log(req.body)
         res
           .status(200)
           .json({

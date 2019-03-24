@@ -1,15 +1,18 @@
 const axios = require('axios')
-const { getCoordinate } = require('../helpers/getCoordinate')
+const {
+    getCoordinate
+} = require('../helpers/getCoordinate')
 const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:3001'
 
 class Route {
     static async routeOptimizer(req, res) {
         try {
+            let routingType = req.body.routingType || 'AtoZ'
             let departureTime = req.body.departureTime || new Date().getTime()
-            let addresses = req.body.addresses
+            let addresses = req.body.addresses || []
             let routeOptimizerRequest = {
                 departureTime,
-                routingType: 'AtoZ',
+                routingType,
                 home: {},
                 tasks: []
             }
@@ -69,7 +72,6 @@ class Route {
     }
 
     static handleError(err, req, res) {
-        console.log(err)
         if (err.response) {
             res.status(err.response.status).json(err.response.data)
         } else {

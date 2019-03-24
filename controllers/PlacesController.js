@@ -17,7 +17,7 @@ class PlacesController{
       res.status(200).json({results: recomendations.slice(0,10)})
 
     } catch(error){
-      console.log(error.response)
+      //console.log(error.response)
       res.status(500).json(error.response)
     }
   }
