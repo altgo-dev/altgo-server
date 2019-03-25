@@ -1,6 +1,4 @@
 const axios = require('axios')
-const redis = require('redis')
-const redisClient = redis.createClient()
 const { getCoordinate } = require('../helpers/getCoordinate')
 const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:3001'
 
@@ -18,15 +16,15 @@ class Route {
             }
             let id = 0
             for (let address of addresses) {
-                let response = await getCoordinate(address)
-                if (response.data.status == 'OK') {
+                let coordinate = await getCoordinate(address)
+                if (coordinate.status == 'OK') {
                     id++
                     let task = {
                         id,
-                        lat: response.data.results[0].geometry.location.lat,
-                        lng: response.data.results[0].geometry.location.lng,
+                        lat: coordinate.results[0].geometry.location.lat,
+                        lng: coordinate.results[0].geometry.location.lng,
                         duration: 1,
-                        geocodingData: response.data.results[0],
+                        geocodingData: coordinate.results[0],
                         addressSearchQuery: address,
                     }
                     routeOptimizerRequest.tasks.push(task)
@@ -63,19 +61,7 @@ class Route {
             let addresses = req.body.addresses
             let geocodingData = []
             for (let address of addresses) {
-                let redisReply = await new Promise((resolve, reject) => {
-                    redisClient.get(`geocoding ${address}`, (err, reply) => {
-                        if (err) reject(err)
-                        else resolve(reply)
-                    })
-                })
-                if (redisReply) {
-                    geocodingData.push(JSON.parse(redisReply))
-                } else {
-                    let response = await getCoordinate(address)
-                    geocodingData.push(response.data)
-                    redisClient.set(`geocoding ${address}`, JSON.stringify(response.data), 'EX', 3600);
-                }
+                geocodingData.push(await getCoordinate(address))
             }
             res.status(200).json(geocodingData)
         } catch (err) {
