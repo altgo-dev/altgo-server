@@ -26,7 +26,8 @@ class Route {
                         lat: response.data.results[0].geometry.location.lat,
                         lng: response.data.results[0].geometry.location.lng,
                         duration: 1,
-                        geocodingData: response.data.results[0]
+                        geocodingData: response.data.results[0],
+                        addressSearchQuery,
                     }
                     routeOptimizerRequest.tasks.push(task)
                     if (id == 1) {
