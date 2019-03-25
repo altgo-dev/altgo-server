@@ -7,7 +7,7 @@ const storage = Storage({
   projectId: process.env.GCLOUD_PROJECT,
   keyFilename: process.env.KEYFILE_PATH
 })
-const bucket = storage.bucket(CLOUD_BUCKET)
+let bucket = null
 
 const getPublicUrl = (filename) => {
   return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`
@@ -19,6 +19,7 @@ const sendUploadToGCS = (req, res, next) => {
     return next()
   }
 
+  bucket = bucket || storage.bucket(CLOUD_BUCKET)
   req.file.originalname = req.file.originalname.split(' ').join('_')
   const gcsname = Date.now() + req.file.originalname
   const file = bucket.file(gcsname)

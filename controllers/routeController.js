@@ -1,7 +1,7 @@
 const axios = require('axios')
-const {
-    getCoordinate
-} = require('../helpers/getCoordinate')
+const redis = require('redis')
+const redisClient = redis.createClient()
+const { getCoordinate } = require('../helpers/getCoordinate')
 const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:3001'
 
 class Route {
@@ -63,8 +63,19 @@ class Route {
             let addresses = req.body.addresses
             let geocodingData = []
             for (let address of addresses) {
-                let response = await getCoordinate(address)
-                geocodingData.push(response.data)
+                let redisReply = await new Promise((resolve, reject) => {
+                    redisClient.get(`geocoding ${address}`, (err, reply) => {
+                        if (err) reject(err)
+                        else resolve(reply)
+                    })
+                })
+                if (redisReply) {
+                    geocodingData.push(JSON.parse(redisReply))
+                } else {
+                    let response = await getCoordinate(address)
+                    geocodingData.push(response.data)
+                    redisClient.set(`geocoding ${address}`, JSON.stringify(response.data), 'EX', 3600);
+                }
             }
             res.status(200).json(geocodingData)
         } catch (err) {
