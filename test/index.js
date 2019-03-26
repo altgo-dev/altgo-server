@@ -354,7 +354,8 @@ describe('Route', () => {
       .request(app)
       .post('/route/routeOptimizer')
       .send({
-        addresses: ['jakarta', 'semarang', 'surabaya']
+        addresses: ['jakarta', 'semarang', 'surabaya'],
+        routingType: "Straight",
       })
       .end(function (err, res) {
         expect(res).to.have.status(200)

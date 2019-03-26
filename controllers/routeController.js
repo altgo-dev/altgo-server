@@ -1,6 +1,7 @@
 const axios = require('axios')
 const { getCoordinate } = require('../helpers/getCoordinate')
-const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:3001'
+const { putFurthestToLast } = require('../helpers/rearanggeAddress')
+const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:3000'
 
 class Route {
     static async routeOptimizer(req, res) {
@@ -8,6 +9,11 @@ class Route {
             let routingType = req.body.routingType || 'AtoZ'
             let departureTime = req.body.departureTime || new Date().getTime()
             let addresses = req.body.addresses || []
+            addresses = Array.from(new Set(addresses))
+            if (routingType === 'Straight') {
+                addresses = await putFurthestToLast(addresses)
+                routingType = 'AtoZ'
+            }
             let routeOptimizerRequest = {
                 departureTime,
                 routingType,
