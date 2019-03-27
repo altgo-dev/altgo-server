@@ -63,6 +63,24 @@ describe('User', () => {
       })
   })
 
+  it('should registering new User and upload image', function (done) {
+    chai
+      .request(app)
+      .post('/register')
+      .attach(("file", readFileSync("./test/example.jpg"), "example.jpg"))
+      .field("name", "user3")
+      .field("email", "user3@mail.com")
+      .field("password", "userno3")
+      .end(function (err, res) {
+        expect(err).to.be.null
+        expect(res).to.have.status(201)
+        expect(res).to.be.json
+        expect(res.body).to.have.nested.property('user')
+          .that.includes.all.keys(['_id', 'email', 'password'])
+        done()
+      })
+  })
+
   it('should login user', function (done) {
     const userLogin = {
       email: 'user1@mail.com',
