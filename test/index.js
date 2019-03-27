@@ -5,6 +5,8 @@ const app = require('../app')
 const User = require('../models/user')
 const Friend = require('../models/friend')
 const fs = require('fs')
+const redis = require('redis')
+const redisClient = redis.createClient()
 
 chai.use(chaiHttp)
 
@@ -14,6 +16,8 @@ describe('User', () => {
   let usertoken
 
   before(function (done) {
+    redisClient.del('geocoding jakarta')
+    redisClient.del('autocomplete jakarta')
     User.deleteMany({})
       .then(function () {
         return User.deleteMany({})
