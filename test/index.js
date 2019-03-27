@@ -8,11 +8,6 @@ const fs = require('fs')
 
 chai.use(chaiHttp)
 
-
-
-
-
-
 describe('User', () => {
 
   let user2
@@ -106,7 +101,7 @@ describe('User', () => {
       .end(function (err, res) {
         expect(err).to.be.null
         expect(res.body.users).to.be.an('array')
-        expect(res.body.users).to.have.lengthOf(2)
+        expect(res.body.users).to.have.lengthOf(3)
         expect(res).to.be.json
         done()
       })
