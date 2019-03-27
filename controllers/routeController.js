@@ -6,10 +6,9 @@ const routeOptimizerURL = process.env.ROUTEOPTIMIZER_URL || 'http://localhost:30
 class Route {
     static async routeOptimizer(req, res) {
         try {
-            let routingType = req.body.routingType || 'AtoZ'
+            let routingType = req.body.routingType || 'RoundTrip'
             let departureTime = req.body.departureTime || new Date().getTime()
             let addresses = req.body.addresses || []
-            addresses = Array.from(new Set(addresses))
             if (routingType === 'Straight') {
                 addresses = await putFurthestToLast(addresses)
                 routingType = 'AtoZ'
