@@ -1,0 +1,7 @@
+POST http://h8-p2-portocombo1.app.dev.arieseptian.com/recommendations
+Content-Type: application/json
+
+{
+    "city":"bandung",
+    "type":"restaurant"
+}
