@@ -1,4 +1,6 @@
+/* istanbul ignore file */
 'use strict'
+
 require('dotenv').config()
 const Storage = require('@google-cloud/storage')
 const CLOUD_BUCKET = process.env.CLOUD_BUCKET
