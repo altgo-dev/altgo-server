@@ -43,20 +43,23 @@ class MeetupController {
       .get(`${GmapNearby}?location=${centerLat},${centerLong}&radius=2000&type=restaurant&key=${APIkey}`)
       .then(({ data }) => {
         data.results.forEach(result => {
-          reccommendations.push({
+          var body =  {
             coordinate: {
               lat: result.geometry.location.lat,
               long: result.geometry.location.lng,
             },
             name: result.name,
             rating: result.rating,
-            //open_now: result.opening_hours.open_now,
             types: result.types,
-            photo_path: result.photos[0].photo_reference,
             location: result.vicinity
-          })
+          }
+
+          if(result.photos){
+            body.photo_path = result.photos[0].photo_reference
+          }
+
+          reccommendations.push(body)
         })
-        // console.log(data.results)
         return Meetup
           .create({
             origins: req.body.origins,
