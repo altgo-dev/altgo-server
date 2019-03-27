@@ -20,7 +20,7 @@ class Route {
                 home: {},
                 tasks: []
             }
-            let id = 0
+            let id = 1
             for (let address of addresses) {
                 let coordinate = await getCoordinate(address)
                 if (coordinate.status == 'OK') {
@@ -32,7 +32,7 @@ class Route {
                         geocodingData: coordinate.results[0],
                         addressSearchQuery: address,
                     }
-                    if (id === 0) {
+                    if (id === 1) {
                         routeOptimizerRequest.home = task
                     } else {
                         routeOptimizerRequest.tasks.push(task)
