@@ -1,12 +1,10 @@
 const chai = require('chai'),
   chaiHttp = require('chai-http'),
-  {
-    expect
-  } = chai,
-  app = require('../app'),
-  User = require('../models/user')
-Friend = require('../models/friend')
-
+  { expect } = chai
+const app = require('../app')
+const User = require('../models/user')
+const Friend = require('../models/friend')
+const fs = require('fs')
 
 chai.use(chaiHttp)
 
@@ -67,7 +65,7 @@ describe('User', () => {
     chai
       .request(app)
       .post('/register')
-      .attach(("file", readFileSync("./test/example.jpg"), "example.jpg"))
+      .attach(("file", fs.readFileSync("./test/example.jpg"), "example.jpg"))
       .field("name", "user3")
       .field("email", "user3@mail.com")
       .field("password", "userno3")
