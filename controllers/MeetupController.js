@@ -52,7 +52,7 @@ class MeetupController {
             rating: result.rating,
             //open_now: result.opening_hours.open_now,
             types: result.types,
-            // photo_path: result.photos[0].photo_reference, 
+            photo_path: result.photos[0].photo_reference,
             location: result.vicinity
           })
         })
