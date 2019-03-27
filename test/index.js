@@ -14,8 +14,8 @@ describe('User', () => {
 
   let user2
   let usertoken
-  redisClient.del('geocoding jakarta')
-  redisClient.del('autocomplete jakarta')
+  redisClient.del('geocoding jakarta', () => { })
+  redisClient.del('autocomplete jakarta', () => { })
 
   before(function (done) {
     User.deleteMany({})
