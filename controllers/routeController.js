@@ -24,7 +24,6 @@ class Route {
             for (let address of addresses) {
                 let coordinate = await getCoordinate(address)
                 if (coordinate.status == 'OK') {
-                    id++
                     let task = {
                         id,
                         lat: coordinate.results[0].geometry.location.lat,
@@ -33,10 +32,12 @@ class Route {
                         geocodingData: coordinate.results[0],
                         addressSearchQuery: address,
                     }
-                    routeOptimizerRequest.tasks.push(task)
-                    if (id == 1) {
+                    if (id === 0) {
                         routeOptimizerRequest.home = task
+                    } else {
+                        routeOptimizerRequest.tasks.push(task)
                     }
+                    id++
                 }
             }
             let response = await axios({
@@ -48,13 +49,14 @@ class Route {
             let optimizedRoute = {
                 status: 'OK',
                 totalTime: response.data.result.totalTime,
-                route: response.data.result.schedule.map(e => {
-                    return {
-                        ...routeOptimizerRequest.tasks.filter(f => f.id == e.id)[0],
-                        startsAt: e.startsAt,
-                        endsAt: e.endsAt,
-                    }
-                })
+                route: [routeOptimizerRequest.home,
+                    ...response.data.result.schedule.map(e => {
+                        return {
+                            ...routeOptimizerRequest.tasks.filter(f => f.id == e.id)[0],
+                            startsAt: e.startsAt,
+                            endsAt: e.endsAt,
+                        }
+                    })]
             }
             res.status(200).json(optimizedRoute)
         } catch (err) {
