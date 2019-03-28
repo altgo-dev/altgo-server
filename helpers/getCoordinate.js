@@ -19,7 +19,7 @@ async function getCoordinate(address) {
     } else {
         let response = await axios.get(`${GmapGeocodeAPI}?address=${address}&${GmapKey}`)
         geocodedAddress = response.data
-        redisClient.set(`geocoding ${address}`, JSON.stringify(response.data), 'EX', 3600);
+        redisClient.set(`geocoding ${address}`, JSON.stringify(response.data), 'EX', 172800);
     }
     return geocodedAddress
 }

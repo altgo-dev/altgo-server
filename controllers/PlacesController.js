@@ -50,7 +50,7 @@ class PlacesController {
           url: `${gmapAutocomplete}?key=${APIkey}&input=${input}`
         })
         autocompleteData = response.data
-        redisClient.set(`autocomplete ${input}`, JSON.stringify(response.data), 'EX', 3600);
+        redisClient.set(`autocomplete ${input}`, JSON.stringify(response.data), 'EX', 172800);
       }
 
       res.status(200).json(autocompleteData)
